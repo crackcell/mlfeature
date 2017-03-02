@@ -20,7 +20,8 @@
         <scala.compat.version>2.11</scala.compat.version>
         <scala-maven-plugin.version>3.2.2</scala-maven-plugin.version>
         <specs2-core.verison>2.4.16</specs2-core.verison>
-        <scalatest.version>2.2.4</scalatest.version>
+        <scalatest.version>3.0.1</scalatest.version>
+        <scopt.version>3.5.0</scopt.version>
         <jackson-module-scala.version>2.8.4</jackson-module-scala.version>
 
         <!-- Spark -->
@@ -38,9 +39,6 @@
         <yamlbeans.version>1.09</yamlbeans.version>
         <maven-surefire-plugin.version>2.18.1</maven-surefire-plugin.version>
         <maven-shade-plugin.version>2.2</maven-shade-plugin.version>
-
-        <scopt.version>3.5.0</scopt.version>
-        <scalatest.version>3.0.1</scalatest.version>
 
     </properties>
 

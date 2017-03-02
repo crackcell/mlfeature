@@ -3,7 +3,7 @@ package org.apache.spark.ml.feature
 import org.apache.spark.annotation.DeveloperApi
 import org.apache.spark.ml.Transformer
 import org.apache.spark.ml.param.ParamMap
-import org.apache.spark.ml.param.shared.{HasLabelCol, HasSeed, HasStrategy}
+import org.apache.spark.ml.param.shared.{HasLabelCol, HasStrategy, HasSeed}
 import org.apache.spark.ml.util._
 import org.apache.spark.sql._
 import org.apache.spark.sql.functions._
