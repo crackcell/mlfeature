@@ -34,10 +34,12 @@ import org.apache.spark.sql.types.{DoubleType, StructField, StructType}
 /**
   * `Bucketizer` maps a column of continuous features to a column of feature buckets.
   */
-final class MyBucketizer (override val uid: String)
+@Since("1.4.0")
+final class MyBucketizer @Since("1.4.0")(@Since("1.4.0") override val uid: String)
   extends Model[MyBucketizer] with HasInputCol with HasOutputCol with DefaultParamsWritable {
 
-  def this() = this(Identifiable.randomUID("mybucketizer"))
+  @Since("1.4.0")
+  def this() = this(Identifiable.randomUID("bucketizer"))
 
   /**
     * Parameter for mapping continuous features into buckets. With n+1 splits, there are n buckets.
@@ -46,10 +48,12 @@ final class MyBucketizer (override val uid: String)
     * Values at -inf, inf must be explicitly provided to cover all Double values;
     * otherwise, values outside the splits specified will be treated as errors.
     *
-    * See also [[handleInvalid]], which can optionally create an additional bucket for NaN/NULL values.
+    * See also [[handleInvalid]], which can optionally create an additional bucket for NaN/NULL
+    * values.
     *
     * @group param
     */
+  @Since("1.4.0")
   val splits: DoubleArrayParam = new DoubleArrayParam(this, "splits",
     "Split points for mapping continuous features into buckets. With n+1 splits, there are n " +
       "buckets. A bucket defined by splits x,y holds values in the range [x,y) except the last " +
@@ -59,15 +63,19 @@ final class MyBucketizer (override val uid: String)
     MyBucketizer.checkSplits)
 
   /** @group getParam */
+  @Since("1.4.0")
   def getSplits: Array[Double] = $(splits)
 
   /** @group setParam */
+  @Since("1.4.0")
   def setSplits(value: Array[Double]): this.type = set(splits, value)
 
   /** @group setParam */
+  @Since("1.4.0")
   def setInputCol(value: String): this.type = set(inputCol, value)
 
   /** @group setParam */
+  @Since("1.4.0")
   def setOutputCol(value: String): this.type = set(outputCol, value)
 
   /**
@@ -78,18 +86,22 @@ final class MyBucketizer (override val uid: String)
     * @group param
     */
   // TODO: SPARK-18619 Make Bucketizer inherit from HasHandleInvalid.
+  @Since("2.1.0")
   val handleInvalid: Param[String] = new Param[String](this, "handleInvalid", "how to handle " +
     "invalid entries. Options are skip (filter out rows with invalid values), " +
     "error (throw an error), or keep (keep invalid values in a special additional bucket).",
     ParamValidators.inArray(MyBucketizer.supportedHandleInvalids))
 
   /** @group getParam */
+  @Since("2.1.0")
   def getHandleInvalid: String = $(handleInvalid)
 
   /** @group setParam */
+  @Since("2.1.0")
   def setHandleInvalid(value: String): this.type = set(handleInvalid, value)
   setDefault(handleInvalid, MyBucketizer.ERROR_INVALID)
 
+  @Since("2.0.0")
   override def transform(dataset: Dataset[_]): DataFrame = {
     transformSchema(dataset.schema)
     val (filteredDataset, keepInvalid) = {
@@ -102,7 +114,8 @@ final class MyBucketizer (override val uid: String)
     }
 
     val bucketizer: UserDefinedFunction = udf { (row: Row) =>
-      MyBucketizer.binarySearchForBuckets($(splits), row.getAs[java.lang.Double]($(inputCol)), keepInvalid)
+      val feature = if (row.isNullAt(0)) None else Some(row.getDouble(0))
+      MyBucketizer.binarySearchForBuckets($(splits), feature, keepInvalid)
     }
 
     val newCol = bucketizer(struct(Array(filteredDataset($(inputCol))): _*))
@@ -117,16 +130,19 @@ final class MyBucketizer (override val uid: String)
     attr.toStructField()
   }
 
+  @Since("1.4.0")
   override def transformSchema(schema: StructType): StructType = {
     SchemaUtils.checkColumnType(schema, $(inputCol), DoubleType)
     SchemaUtils.appendColumn(schema, prepOutputField(schema))
   }
 
+  @Since("1.4.1")
   override def copy(extra: ParamMap): MyBucketizer = {
     defaultCopy[MyBucketizer](extra).setParent(parent)
   }
 }
 
+@Since("1.6.0")
 object MyBucketizer extends DefaultParamsReadable[MyBucketizer] {
 
   private[feature] val SKIP_INVALID: String = "skip"
@@ -165,26 +181,26 @@ object MyBucketizer extends DefaultParamsReadable[MyBucketizer] {
     */
 
   private[feature] def binarySearchForBuckets(
-                                               splits: Array[Double],
-                                               feature: java.lang.Double,
-                                               keepInvalid: Boolean): Double = {
-    if (feature == null || feature.isNaN) {
+      splits: Array[Double],
+      feature: Option[Double],
+      keepInvalid: Boolean): Double = {
+    if (feature.getOrElse(Double.NaN).isNaN) {
       if (keepInvalid) {
         splits.length - 1
       } else {
-        throw new SparkException("Bucketizer encountered NaN/NULL value. To handle or skip NaNs/NULLs," +
-          " try setting Bucketizer.handleInvalid.")
+        throw new SparkException("Bucketizer encountered NaN/NULL values. " +
+          "To handle or skip NaNs/NULLs, try setting Bucketizer.handleInvalid.")
       }
-    } else if (feature == splits.last) {
+    } else if (feature.get == splits.last) {
       splits.length - 2
     } else {
-      val idx = ju.Arrays.binarySearch(splits, feature)
+      val idx = ju.Arrays.binarySearch(splits, feature.get)
       if (idx >= 0) {
         idx
       } else {
         val insertPos = -idx - 1
         if (insertPos == 0 || insertPos == splits.length) {
-          throw new SparkException(s"Feature value $feature out of Bucketizer bounds" +
+          throw new SparkException(s"Feature value ${feature.get} out of Bucketizer bounds" +
             s" [${splits.head}, ${splits.last}].  Check your features, or loosen " +
             s"the lower/upper bound constraints.")
         } else {
@@ -194,5 +210,6 @@ object MyBucketizer extends DefaultParamsReadable[MyBucketizer] {
     }
   }
 
+  @Since("1.6.0")
   override def load(path: String): MyBucketizer = super.load(path)
 }
