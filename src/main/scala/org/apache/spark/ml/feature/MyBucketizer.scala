@@ -107,7 +107,14 @@ final class MyBucketizer @Since("1.4.0")(@Since("1.4.0") override val uid: Strin
     val (filteredDataset, keepInvalid) = {
       if (getHandleInvalid == MyBucketizer.SKIP_INVALID) {
         // "skip" NaN/NULL option is set, will filter out NaN/NULL values in the dataset
-        (dataset.na.drop().toDF(), false)
+        var filteredDataset = dataset.na.drop(Array($(inputCol)))
+        if ($(splits)(0) != Double.NegativeInfinity) {
+          filteredDataset = filteredDataset.filter(s"${$(inputCol)} > ${$(splits)(0)}")
+        }
+        if ($(splits).last != Double.PositiveInfinity) {
+          filteredDataset = filteredDataset.filter(s"${$(inputCol)} <= ${$(splits).last}")
+        }
+        (filteredDataset.toDF(), false)
       } else {
         (dataset.toDF(), getHandleInvalid == MyBucketizer.KEEP_INVALID)
       }
@@ -200,9 +207,13 @@ object MyBucketizer extends DefaultParamsReadable[MyBucketizer] {
       } else {
         val insertPos = -idx - 1
         if (insertPos == 0 || insertPos == splits.length) {
-          throw new SparkException(s"Feature value ${feature.get} out of Bucketizer bounds" +
-            s" [${splits.head}, ${splits.last}].  Check your features, or loosen " +
-            s"the lower/upper bound constraints.")
+          if (keepInvalid) {
+            splits.length - 1
+          } else {
+            throw new SparkException(s"Feature value ${feature.get} out of Bucketizer bounds" +
+              s" [${splits.head}, ${splits.last}].  Check your features, or loosen " +
+              s"the lower/upper bound constraints.")
+          }
         } else {
           insertPos - 1
         }

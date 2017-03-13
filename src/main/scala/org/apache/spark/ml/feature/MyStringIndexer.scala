@@ -146,7 +146,7 @@ object MyStringIndexer extends DefaultParamsReadable[MyStringIndexer] {
  */
 @Since("1.4.0")
 class MyStringIndexerModel(
-                            @Since("1.4.0") override val uid: String,
+    @Since("1.4.0") override val uid: String,
     @Since("1.5.0") val labels: Array[String])
   extends Model[MyStringIndexerModel] with MyStringIndexerBase with MLWritable {
 
