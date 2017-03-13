@@ -3,10 +3,15 @@
 Spark MLlib特征工程工具包，包含了一些实际工作中常用功能：
 - 数据预处理：
   - 制备平衡样本：DataBalancer
-  - 处理缺失值：MissingValueMeanImputor
+  - 处理缺失值：
+    - 连续值均值填充：MissingValueMeanImputor
+    - 条件连续值均值填充：TODO
 - 特征转换
   - 增强版的连续值分桶器：MyBucketizer
   - 增强版的字符串转离散值的索引器：MyStringIndexer
+- 特征选取filter方法
+  - 单特征AuROC：TODO
+  - 相关性：TODO
 
 ## 不平衡样本
 
