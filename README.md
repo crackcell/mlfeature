@@ -39,7 +39,7 @@ val bucketizer: MyBucketizer = new MyBucketizer()
   .setOutputCol("result")
   .setSplits(splits)
 
-bucketizer.transform(dataFrame)
+val transformed = bucketizer.transform(dataFrame)
 ```
 
 ### MyStringIndxer: Enhanced StringIndexer
