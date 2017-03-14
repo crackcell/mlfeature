@@ -1,4 +1,4 @@
-# spark-ml-fea
+# MLFeature
 
 Spark MLlib特征工程工具包，包含了一些实际工作中常用功能：
 - 数据预处理：

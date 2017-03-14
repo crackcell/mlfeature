@@ -1,4 +1,4 @@
-# spark-ml-fea
+# MLfeature
 
 Feature engineering toolkit for Spark MLlib:
 - Data preprocessing:
