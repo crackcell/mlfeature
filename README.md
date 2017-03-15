@@ -8,7 +8,7 @@ Feature engineering toolkit for Spark MLlib:
     - Impute continuous missing values with conditional mean: TODO
 - Feature transform
   - Enhanced Bucketizer: MyBucketizer
-  - ~~Enhanced StringIndexer: MyStringIndexer~~ (Merged back to Spark master, [SPARK-17233](https://github.com/apache/spark/pull/17233))
+  - ~~Enhanced StringIndexer: MyStringIndexer~~ (Merged with Spark master, [SPARK-17233](https://github.com/apache/spark/pull/17233))
 - Feature selection
   - AuROC for single feature: TODO
   - Correlation: TODO
