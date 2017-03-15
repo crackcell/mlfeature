@@ -8,7 +8,7 @@ Feature engineering toolkit for Spark MLlib:
     - Impute continuous missing values with conditional mean: TODO
 - Feature transform
   - Enhanced Bucketizer: MyBucketizer
-  - Enhanced StringIndexer: MyStringIndexer
+  - ~~Enhanced StringIndexer: MyStringIndexer~~ (Merged back to Spark master, [SPARK-17233](https://github.com/apache/spark/pull/17233))
 - Feature selection
   - AuROC for single feature: TODO
   - Correlation: TODO
@@ -40,20 +40,4 @@ val bucketizer: MyBucketizer = new MyBucketizer()
   .setSplits(splits)
 
 val transformed = bucketizer.transform(dataFrame)
-```
-
-### MyStringIndxer: Enhanced StringIndexer
-
-Give NULLs and unseen lables a special index.
-
-Example:
-```scala
-val data = Seq((0, "a"), (1, "b"), (2, "c"), (3, "a"), (4, "a"), (5, "c"))
-val df = data.toDF("id", "label")
-val indexer = new MyStringIndexer()
-  .setInputCol("label")
-  .setOutputCol("labelIndex")
-  .fit(df)
-
-val transformed = indexer.transform(df)
 ```
