@@ -3,9 +3,8 @@
 Feature engineering toolkit for Spark MLlib:
 - Data preprocessing:
   - Handle imbalanced dataset: DataBalancer
-  - Handle missing values:
-    - Impute continuous missing values with mean: MissingValueMeanImputor
-    - Impute continuous missing values with conditional mean: TODO
+  - ~~Handle missing values~~: (Spark 2.2 has implemented this, [SPARK-13568](https://github.com/apache/spark/pull/11601))
+    - ~~Impute continuous missing values with mean: MissingValueMeanImputor~~
 - Feature transform
   - Enhanced Bucketizer: MyBucketizer
   - ~~Enhanced StringIndexer: MyStringIndexer~~ (Merged with Spark 2.2 master, [SPARK-17233](https://github.com/apache/spark/pull/17233))
