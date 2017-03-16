@@ -3,7 +3,7 @@
 Feature engineering toolkit for Spark MLlib:
 - Data preprocessing:
   - Handle imbalanced dataset: DataBalancer
-  - ~~Handle missing values~~: (Spark 2.2 has implemented this, [SPARK-13568](https://github.com/apache/spark/pull/11601))
+  - ~~Handle missing values~~: (Implemented in Spark 2.2, [SPARK-13568](https://github.com/apache/spark/pull/11601))
     - ~~Impute continuous missing values with mean: MissingValueMeanImputor~~
 - Feature transform
   - Enhanced Bucketizer: MyBucketizer
