@@ -38,7 +38,7 @@ class DataBalancer(override val uid: String)
   override def transformSchema(schema: StructType): StructType = {
     require(get(labelCol).isDefined, "Label col must be defined first.")
     SchemaUtils.checkColumnTypes(schema, $(labelCol), Seq(IntegerType, DoubleType))
-    StructType(schema.fields)
+    schema
   }
 
   private def withRandomStrategy(dataset: Dataset[_]): DataFrame = {
