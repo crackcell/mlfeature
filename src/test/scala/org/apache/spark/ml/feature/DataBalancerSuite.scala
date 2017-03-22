@@ -22,6 +22,6 @@ class DataBalancerSuite extends MyTestSuite {
       case Row(feature: String, count) =>
         assert(count === expectedNum(feature))
     }
-
   }
+
 }

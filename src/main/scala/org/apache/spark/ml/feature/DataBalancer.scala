@@ -3,7 +3,7 @@ package org.apache.spark.ml.feature
 import org.apache.spark.ml.{Estimator, Model, Transformer}
 import org.apache.spark.ml.param._
 import org.apache.spark.ml.param.shared.{HasInputCol, HasOutputCol, HasSeed, HasStrategy}
-import org.apache.spark.ml.util.{Identifiable, MLWritable}
+import org.apache.spark.ml.util.{DefaultParamsReadable, DefaultParamsWritable, Identifiable, MLWritable}
 import org.apache.spark.sql.functions.col
 import org.apache.spark.sql.types.{StringType, StructType}
 import org.apache.spark.sql.{DataFrame, Dataset}
@@ -13,7 +13,8 @@ import scala.collection.mutable.ArrayBuffer
 /**
   * Created by Menglong TAN on 3/21/17.
   */
-class DataBalancer(override val uid: String) extends Transformer with HasInputCol with HasSeed {
+class DataBalancer(override val uid: String)
+  extends Transformer with HasInputCol with HasSeed with DefaultParamsWritable{
 
   def this() = this(Identifiable.randomUID("stratifiedSamplingDataBalancer"))
 
@@ -69,9 +70,11 @@ class DataBalancer(override val uid: String) extends Transformer with HasInputCo
 
 }
 
-private object DataBalancer {
+private object DataBalancer extends DefaultParamsReadable[DataBalancer] {
   private[feature] val OVERSAMPLING_STRATEGY: String = "oversampling"
   private[feature] val supportedStrategies: Array[String] = Array(OVERSAMPLING_STRATEGY)
+
+  override def load(path: String): DataBalancer = super.load(path)
 }
 
 
