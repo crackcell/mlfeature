@@ -1,6 +1,7 @@
 package org.apache.spark.ml.feature
 
 import org.apache.spark.MyTestSuite
+import org.apache.spark.sql.Row
 
 /**
   * Created by Menglong TAN on 3/22/17.
@@ -10,9 +11,10 @@ class DataBalancerSuite extends MyTestSuite {
   import sqlContext.implicits._
 
   test("Build ratio map") {
-    val data = Array("a", "a", "b", "c")
-    val expectedRatio: Map[Any, Double] = Map("a" -> 1.0, "b" -> 2.0, "c" -> 2.0)
-    val dataFrame = data.toSeq.toDF("feature")
+    val data: Seq[String] = Seq("a", "a", "a", "a", "b","b", "c")
+    val expectedFactor = Map("a" -> 1.0, "b" -> 2.0, "c" -> 4.0)
+    val expectedNum = Map("a" -> 4, "b" -> 4, "c" -> 4)
+    val dataFrame = data.toDF("feature")
 
     val balancer = new DataBalancer()
       .setInputCol("feature")
@@ -21,9 +23,12 @@ class DataBalancerSuite extends MyTestSuite {
     val model = balancer.fit(dataFrame)
 
     model.factors.foreach { case (value, ratio) =>
-      assert(ratio === expectedRatio(value))
+      assert(ratio === expectedFactor(value))
     }
 
-    model.transform(dataFrame).show(100)
+    model.transform(dataFrame).groupBy("feature").count().collect().map {
+      case Row(feature: String, count) =>
+        assert(count === expectedNum(feature))
+    }
   }
 }
