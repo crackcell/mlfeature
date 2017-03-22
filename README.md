@@ -14,7 +14,23 @@ Feature engineering toolkit for Spark MLlib:
 
 ## Handle imbalcned dataset
 
-- DataBalancer: Oversample balancer
+- DataBalancer: Make an balanced dataset with multiple strategies:
+  - oversampling
+  - TODO
+  
+Example:
+```scala
+val data = Array("a", "a", "b", "c")
+val dataFrame = data.toSeq.toDF("feature")
+
+val balancer = new DataBalancer()
+  .setStrategy("oversampling")
+  .setInputCol("feature")
+  .setOutputCol("result")
+
+val model = balancer.fit(dataFrame)
+model.transform(dataFrame).show(100)
+```
 
 ## Handle missing values
 
