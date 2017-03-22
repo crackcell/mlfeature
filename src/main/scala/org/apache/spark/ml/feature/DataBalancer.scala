@@ -1,9 +1,9 @@
 package org.apache.spark.ml.feature
 
-import org.apache.spark.ml.{Estimator, Model, Transformer}
+import org.apache.spark.ml.Transformer
 import org.apache.spark.ml.param._
-import org.apache.spark.ml.param.shared.{HasInputCol, HasOutputCol, HasSeed, HasStrategy}
-import org.apache.spark.ml.util.{DefaultParamsReadable, DefaultParamsWritable, Identifiable, MLWritable}
+import org.apache.spark.ml.param.shared.{HasInputCol, HasSeed}
+import org.apache.spark.ml.util.{DefaultParamsReadable, DefaultParamsWritable, Identifiable}
 import org.apache.spark.sql.functions.col
 import org.apache.spark.sql.types.{StringType, StructType}
 import org.apache.spark.sql.{DataFrame, Dataset}
@@ -14,17 +14,18 @@ import scala.collection.mutable.ArrayBuffer
   * Created by Menglong TAN on 3/21/17.
   */
 class DataBalancer(override val uid: String)
-  extends Transformer with HasInputCol with HasSeed with DefaultParamsWritable{
-
-  def this() = this(Identifiable.randomUID("stratifiedSamplingDataBalancer"))
-
-  setDefault(seed, this.getClass.getName.hashCode.toLong)
+  extends Transformer with HasInputCol with HasSeed with DefaultParamsWritable {
 
   val strategy: Param[String] = new Param[String](this, "strategy",
     "how to handle imbalanced dataset. Options are oversampling",
     ParamValidators.inArray(DataBalancer.supportedStrategies))
 
+  setDefault(seed, this.getClass.getName.hashCode.toLong)
+
+  def this() = this(Identifiable.randomUID("stratifiedSamplingDataBalancer"))
+
   def setStrategy(value: String): this.type = set(strategy, value)
+
   setDefault(strategy, "oversampling")
 
   def getStrategy: String = $(strategy)
@@ -61,12 +62,12 @@ class DataBalancer(override val uid: String)
     validateAndTransformSchema(schema)
   }
 
-  override def copy(extra: ParamMap): DataBalancer = defaultCopy(extra)
-
   protected def validateAndTransformSchema(schema: StructType): StructType = {
     require(schema.fieldNames.contains($(inputCol)), s"Input column ${$(inputCol)} does not exist")
     schema
   }
+
+  override def copy(extra: ParamMap): DataBalancer = defaultCopy(extra)
 
 }
 

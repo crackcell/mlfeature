@@ -1,9 +1,8 @@
 package org.apache.spark.ml.evaluation
 
 import org.apache.spark.SparkException
-import org.apache.spark.annotation.Since
-import org.apache.spark.ml.param.{Param, ParamMap, ParamValidators}
 import org.apache.spark.ml.param.shared.{HasInputCol, HasLabelCol}
+import org.apache.spark.ml.param.{Param, ParamMap, ParamValidators}
 import org.apache.spark.ml.util.{DefaultParamsWritable, Identifiable}
 import org.apache.spark.sql.Dataset
 
@@ -13,11 +12,11 @@ import org.apache.spark.sql.Dataset
 class SingleFeatureEvaluator(override val uid: String)
   extends Evaluator with HasInputCol with HasLabelCol with DefaultParamsWritable {
 
-  def this() = this(Identifiable.randomUID("singleFeaEval"))
-
   val metricName = new Param[String](this, "metricName",
     "metric name in evaluation (areaUnderROC)",
     ParamValidators.inArray(SingleFeatureEvaluator.supportedMetrics))
+
+  def this() = this(Identifiable.randomUID("singleFeaEval"))
 
   def getMetricName: String = $(metricName)
 
