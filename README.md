@@ -26,10 +26,8 @@ val dataFrame = data.toSeq.toDF("feature")
 val balancer = new DataBalancer()
   .setStrategy("oversampling")
   .setInputCol("feature")
-  .setOutputCol("result")
 
-val model = balancer.fit(dataFrame)
-model.transform(dataFrame).show(100)
+balacner.transform(dataFrame).show(100)
 ```
 
 ## Handle missing values
