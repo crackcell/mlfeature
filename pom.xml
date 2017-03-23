@@ -6,8 +6,8 @@
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <modules>
-        <module>sparkml</module>
-        <module>udf/core</module>
+        <module>mlfeature-sparkml</module>
+        <module>mlfeature-udf</module>
     </modules>
     <name>Spark MLlib Feature Engineering Toolkit Parent POM</name>
 
