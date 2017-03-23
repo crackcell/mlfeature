@@ -9,7 +9,7 @@
         <module>mlfeature-sparkml</module>
         <module>mlfeature-udf</module>
     </modules>
-    <name>Spark MLlib Feature Engineering Toolkit Parent POM</name>
+    <name>Feature Engineering Toolkit Parent POM</name>
 
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
