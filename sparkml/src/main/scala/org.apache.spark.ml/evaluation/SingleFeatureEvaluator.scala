@@ -41,6 +41,6 @@ class SingleFeatureEvaluator(override val uid: String)
 }
 
 object SingleFeatureEvaluator {
-  private[feature] val AUROC = "areaUnderROC"
-  private[feature] val supportedMetrics = Array(AUROC)
+  private[evaluation] val AUROC = "areaUnderROC"
+  private[evaluation] val supportedMetrics = Array(AUROC)
 }

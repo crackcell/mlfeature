@@ -8,8 +8,6 @@ import org.apache.spark.sql.Row
   */
 class DataBalancerSuite extends MyTestSuite {
 
-  import sqlContext.implicits._
-
   test("Build ratio map") {
     val data: Seq[String] = Seq("a", "a", "a", "a", "b","b", "c")
     val expectedNum = Map("a" -> 4, "b" -> 4, "c" -> 4)

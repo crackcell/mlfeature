@@ -1,14 +1,12 @@
 package org.apache.spark.ml.feature
 
-import org.apache.spark.{MyTestSuite, SparkConf, SparkContext, SparkException}
-import org.apache.spark.sql.{DataFrame, Row, SQLContext, SparkSession}
+import org.apache.spark.{MyTestSuite, SparkException}
+import org.apache.spark.sql.{DataFrame, Row}
 
 /**
   * Created by crackcell on 3/13/17.
   */
 class MyBucketizerSuite extends MyTestSuite {
-
-  import sqlContext.implicits._
 
   test("Bucket continuous features, without -inf,inf") {
     // Check a set of valid feature values.
