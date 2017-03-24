@@ -8,6 +8,8 @@ import org.apache.spark.sql.{DataFrame, Row}
   */
 class MyBucketizerSuite extends MySparkTestSuite {
 
+  import sqlContext.implicits._
+
   test("Bucket continuous features, without -inf,inf") {
     // Check a set of valid feature values.
     val splits = Array(-0.5, 0.0, 0.5)

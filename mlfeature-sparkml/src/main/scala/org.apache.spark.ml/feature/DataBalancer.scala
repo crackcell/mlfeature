@@ -1,5 +1,6 @@
 package org.apache.spark.ml.feature
 
+import org.apache.spark.SparkException
 import org.apache.spark.ml.Transformer
 import org.apache.spark.ml.param._
 import org.apache.spark.ml.param.shared.{HasInputCol, HasSeed}
@@ -17,7 +18,7 @@ class DataBalancer(override val uid: String)
   extends Transformer with HasInputCol with HasSeed with DefaultParamsWritable {
 
   val strategy: Param[String] = new Param[String](this, "strategy",
-    "how to handle imbalanced dataset. Options are oversampling",
+    "how to handle imbalanced dataset. Options are 'oversampling' or 'undersampling'",
     ParamValidators.inArray(DataBalancer.supportedStrategies))
 
   setDefault(seed, this.getClass.getName.hashCode.toLong)
@@ -28,35 +29,54 @@ class DataBalancer(override val uid: String)
 
   setDefault(strategy, "oversampling")
 
-  def getStrategy: String = $(strategy)
-
   def setInputCol(value: String): this.type = set(inputCol, value)
 
   override def transform(dataset: Dataset[_]): DataFrame = {
     transformSchema(dataset.schema, logging = true)
 
-    val counts = dataset.select(col($(inputCol)).cast(StringType))
-      .rdd
-      .map(_.getString(0))
-      .countByValue()
-      .toSeq.sortBy(-_._2)
+    val counts = getStrategy match {
+      case DataBalancer.OVERSAMPLING_STRATEGY =>
+        dataset.select(col($(inputCol)).cast(StringType))
+          .rdd
+          .map(_.getString(0))
+          .countByValue()
+          .toSeq.sortBy(-_._2)
+      case DataBalancer.UNDERSAMPLING_STRATEGY =>
+        dataset.select(col($(inputCol)).cast(StringType))
+          .rdd
+          .map(_.getString(0))
+          .countByValue()
+          .toSeq.sortBy(_._2)
+      case _ => throw new SparkException(s"Unknown strategy ${$(strategy)}")
+    }
+    println(counts)
+
     val factors = counts.map { case (value, count) =>
       (value, counts(0)._2 / count.toDouble)
     }.toArray
+    factors.foreach(println)
 
     val datasets = ArrayBuffer[(DataFrame, Double)]()
 
+    val factors2 = getStrategy match {
+      case DataBalancer.OVERSAMPLING_STRATEGY => factors
+      case DataBalancer.UNDERSAMPLING_STRATEGY => factors.reverse
+    }
+
     var all = dataset.filter(col($(inputCol)).cast(StringType) === factors(0)._1).toDF()
     for (i <- 1 to factors.length - 1) {
-      val filteredDataset =
-        dataset.filter(col($(inputCol)).cast(StringType) === factors(i)._1).toDF()
+      val value = factors(i)._1
       val factor = factors(i)._2
+      val filteredDataset =
+        dataset.filter(col($(inputCol)).cast(StringType) === value).toDF()
       for (_ <- 1 to factor.toInt) all = all.unionAll(filteredDataset)
       all = all.unionAll(filteredDataset.sample(false, factor % 1))
     }
-
+    all.show(100)
     all
   }
+
+  def getStrategy: String = $(strategy)
 
   override def transformSchema(schema: StructType) = {
     validateAndTransformSchema(schema)
@@ -73,7 +93,9 @@ class DataBalancer(override val uid: String)
 
 private object DataBalancer extends DefaultParamsReadable[DataBalancer] {
   private[feature] val OVERSAMPLING_STRATEGY: String = "oversampling"
-  private[feature] val supportedStrategies: Array[String] = Array(OVERSAMPLING_STRATEGY)
+  private[feature] val UNDERSAMPLING_STRATEGY: String = "undersampling"
+  private[feature] val supportedStrategies: Array[String] =
+    Array(OVERSAMPLING_STRATEGY, UNDERSAMPLING_STRATEGY)
 
   override def load(path: String): DataBalancer = super.load(path)
 }
