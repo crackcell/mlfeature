@@ -40,7 +40,7 @@ class DataBalancer(override val uid: String)
       .countByValue()
       .toSeq.sortBy(-_._2)
 
-    val factors = getStrategy match {
+    val factors = $(strategy) match {
       case DataBalancer.OVERSAMPLING_STRATEGY =>
         counts.map { case (value, count) =>
           (value, counts(0)._2 / count.toDouble)
