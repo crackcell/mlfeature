@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.crackcell.mludf.functions
+package com.crackcell.mlfeature.udf.functions
 
 /**
   * City functions.

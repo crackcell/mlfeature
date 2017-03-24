@@ -1,12 +1,12 @@
 package org.apache.spark.ml.feature
 
-import org.apache.spark.MyTestSuite
+import org.apache.spark.MySparkTestSuite
 import org.apache.spark.sql.Row
 
 /**
   * Created by Menglong TAN on 3/22/17.
   */
-class DataBalancerSuite extends MyTestSuite {
+class DataBalancerSuite extends MySparkTestSuite {
 
   test("Build ratio map") {
     val data: Seq[String] = Seq("a", "a", "a", "a", "b","b", "c")
