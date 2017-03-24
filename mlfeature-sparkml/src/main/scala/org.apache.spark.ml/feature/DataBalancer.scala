@@ -58,10 +58,7 @@ class DataBalancer(override val uid: String)
       val filteredDataset =
         dataset.filter(col($(inputCol)).cast(StringType) === value).toDF()
       for (_ <- 1 to factor.toInt) all = all.union(filteredDataset)
-      if (factor % 1 != 0) {
-        println("f:", factor % 1)
-        all = all.union(filteredDataset.sample(false, factor % 1))
-      }
+      if (factor % 1 != 0) all = all.union(filteredDataset.sample(false, factor % 1))
     }
     all
   }
