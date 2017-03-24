@@ -28,7 +28,7 @@ val balancer = new DataBalancer()
   .setStrategy("oversampling")
   .setInputCol("feature")
 
-val result = balacner.transform(dataFrame).show(100)
+val result = balacner.transform(dataFrame)
 result.show(100)
 ```
 
