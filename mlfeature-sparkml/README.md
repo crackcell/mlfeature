@@ -28,7 +28,8 @@ val balancer = new DataBalancer()
   .setStrategy("oversampling")
   .setInputCol("feature")
 
-balacner.transform(dataFrame).show(100)
+val result = balacner.transform(dataFrame).show(100)
+result.show(100)
 ```
 
 ```scala
@@ -40,6 +41,7 @@ val balancer = new DataBalancer()
   .setInputCol("feature")
 
 val result = balancer.transform(dataFrame)
+result.show(100)
 ```
 
 ## Handle missing values
