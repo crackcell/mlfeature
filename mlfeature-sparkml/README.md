@@ -19,6 +19,7 @@ Feature engineering toolkit for Spark MLlib:
   - stratified undersampling
   
 Example:
+
 ```scala
 val data = Array("a", "a", "b", "c")
 val dataFrame = data.toSeq.toDF("feature")
@@ -28,6 +29,17 @@ val balancer = new DataBalancer()
   .setInputCol("feature")
 
 balacner.transform(dataFrame).show(100)
+```
+
+```scala
+val data: Seq[String] = Seq("a", "a", "a", "a", "b", "b","b", "c")
+val dataFrame = data.toDF("feature")
+
+val balancer = new DataBalancer()
+  .setStrategy("undersampling")
+  .setInputCol("feature")
+
+val result = balancer.transform(dataFrame)
 ```
 
 ## Handle missing values
