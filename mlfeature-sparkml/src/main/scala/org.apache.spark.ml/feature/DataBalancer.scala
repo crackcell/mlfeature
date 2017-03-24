@@ -34,33 +34,21 @@ class DataBalancer(override val uid: String)
   override def transform(dataset: Dataset[_]): DataFrame = {
     transformSchema(dataset.schema, logging = true)
 
-    val counts = getStrategy match {
+    val counts = dataset.select(col($(inputCol)).cast(StringType))
+      .rdd
+      .map(_.getString(0))
+      .countByValue()
+      .toSeq.sortBy(-_._2)
+
+    val factors = getStrategy match {
       case DataBalancer.OVERSAMPLING_STRATEGY =>
-        dataset.select(col($(inputCol)).cast(StringType))
-          .rdd
-          .map(_.getString(0))
-          .countByValue()
-          .toSeq.sortBy(-_._2)
+        counts.map { case (value, count) =>
+          (value, counts(0)._2 / count.toDouble)
+        }.toArray
       case DataBalancer.UNDERSAMPLING_STRATEGY =>
-        dataset.select(col($(inputCol)).cast(StringType))
-          .rdd
-          .map(_.getString(0))
-          .countByValue()
-          .toSeq.sortBy(_._2)
-      case _ => throw new SparkException(s"Unknown strategy ${$(strategy)}")
-    }
-    println(counts)
-
-    val factors = counts.map { case (value, count) =>
-      (value, counts(0)._2 / count.toDouble)
-    }.toArray
-    factors.foreach(println)
-
-    val datasets = ArrayBuffer[(DataFrame, Double)]()
-
-    val factors2 = getStrategy match {
-      case DataBalancer.OVERSAMPLING_STRATEGY => factors
-      case DataBalancer.UNDERSAMPLING_STRATEGY => factors.reverse
+        counts.map { case (value, count) =>
+          (value, counts.last._2 / count.toDouble)
+        }.toArray.reverse
     }
 
     var all = dataset.filter(col($(inputCol)).cast(StringType) === factors(0)._1).toDF()
@@ -69,10 +57,12 @@ class DataBalancer(override val uid: String)
       val factor = factors(i)._2
       val filteredDataset =
         dataset.filter(col($(inputCol)).cast(StringType) === value).toDF()
-      for (_ <- 1 to factor.toInt) all = all.unionAll(filteredDataset)
-      all = all.unionAll(filteredDataset.sample(false, factor % 1))
+      for (_ <- 1 to factor.toInt) all = all.union(filteredDataset)
+      if (factor % 1 != 0) {
+        println("f:", factor % 1)
+        all = all.union(filteredDataset.sample(false, factor % 1))
+      }
     }
-    all.show(100)
     all
   }
 

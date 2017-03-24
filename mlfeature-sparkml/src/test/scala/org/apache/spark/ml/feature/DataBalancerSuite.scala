@@ -21,11 +21,10 @@ class DataBalancerSuite extends MySparkTestSuite {
       .setInputCol("feature")
 
     val result = balancer.transform(dataFrame)
-    result.show(100)
   }
 
   test("Undersampling") {
-    val data: Seq[String] = Seq("a", "a", "a", "a", "b","b", "c")
+    val data: Seq[String] = Seq("a", "a", "a", "a", "b", "b","b", "c")
     val expectedNum = Map("a" -> 1, "b" -> 1, "c" -> 1)
     val dataFrame = data.toDF("feature")
 
@@ -34,7 +33,6 @@ class DataBalancerSuite extends MySparkTestSuite {
       .setInputCol("feature")
 
     val result = balancer.transform(dataFrame)
-    result.show(100)
   }
 
 }
