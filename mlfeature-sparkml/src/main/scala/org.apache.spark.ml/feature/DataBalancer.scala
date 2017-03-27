@@ -21,15 +21,15 @@ class DataBalancer(override val uid: String)
     "how to handle imbalanced dataset. Options are 'oversampling' or 'undersampling'",
     ParamValidators.inArray(DataBalancer.supportedStrategies))
 
-  setDefault(seed, this.getClass.getName.hashCode.toLong)
 
   def this() = this(Identifiable.randomUID("stratifiedSamplingDataBalancer"))
 
   def setStrategy(value: String): this.type = set(strategy, value)
 
-  setDefault(strategy, "oversampling")
-
   def setInputCol(value: String): this.type = set(inputCol, value)
+
+  setDefault(strategy, "undersampling")
+  setDefault(seed, this.getClass.getName.hashCode.toLong)
 
   override def transform(dataset: Dataset[_]): DataFrame = {
     transformSchema(dataset.schema, logging = true)
@@ -58,7 +58,7 @@ class DataBalancer(override val uid: String)
       val filteredDataset =
         dataset.filter(col($(inputCol)).cast(StringType) === value).toDF()
       for (_ <- 1 to factor.toInt) all = all.union(filteredDataset)
-      if (factor % 1 != 0) all = all.union(filteredDataset.sample(false, factor % 1))
+      if (factor % 1 != 0) all = all.union(filteredDataset.sample(false, factor % 1, $(seed)))
     }
     all
   }
