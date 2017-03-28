@@ -18,7 +18,8 @@ class DataBalancer(override val uid: String)
   extends Transformer with HasInputCol with HasSeed with DefaultParamsWritable {
 
   val strategy: Param[String] = new Param[String](this, "strategy",
-    "how to handle imbalanced dataset. Options are 'oversampling' or 'undersampling'",
+    "how to handle imbalanced dataset. Options are 'oversampling', 'undersampling' " +
+    "or 'midllesampling'",
     ParamValidators.inArray(DataBalancer.supportedStrategies))
 
 
@@ -40,15 +41,27 @@ class DataBalancer(override val uid: String)
       .countByValue()
       .toSeq.sortBy(-_._2)
 
-    val factors = $(strategy) match {
-      case DataBalancer.OVERSAMPLING_STRATEGY =>
+    val factors: Array[(String, Double)] = $(strategy) match {
+      case DataBalancer.OVER_SAMPLING_STRATEGY =>
         counts.map { case (value, count) =>
           (value, counts(0)._2 / count.toDouble)
         }.toArray
-      case DataBalancer.UNDERSAMPLING_STRATEGY =>
+      case DataBalancer.UNDER_SAMPLING_STRATEGY =>
         counts.map { case (value, count) =>
           (value, counts.last._2 / count.toDouble)
         }.toArray.reverse
+      case DataBalancer.MIDDLE_SAMPLING_STRATEGY =>
+        val originalFactors = counts.map { case (value, count) =>
+          (value, counts(0)._2 / count.toDouble)
+        }.toArray
+        if (originalFactors.length < 3) {
+          originalFactors
+        } else {
+          val pivot: Int = originalFactors.length / 2
+          originalFactors.slice(0, pivot) ++
+            Array(originalFactors(pivot)) ++
+              originalFactors.slice(pivot + 1, originalFactors.length)
+        }
     }
 
     var all = dataset.filter(col($(inputCol)).cast(StringType) === factors(0)._1).toDF()
@@ -79,10 +92,11 @@ class DataBalancer(override val uid: String)
 }
 
 private object DataBalancer extends DefaultParamsReadable[DataBalancer] {
-  private[feature] val OVERSAMPLING_STRATEGY: String = "oversampling"
-  private[feature] val UNDERSAMPLING_STRATEGY: String = "undersampling"
+  private[feature] val OVER_SAMPLING_STRATEGY = "oversampling"
+  private[feature] val UNDER_SAMPLING_STRATEGY = "undersampling"
+  private[feature] val MIDDLE_SAMPLING_STRATEGY = "middlesampling"
   private[feature] val supportedStrategies: Array[String] =
-    Array(OVERSAMPLING_STRATEGY, UNDERSAMPLING_STRATEGY)
+    Array(OVER_SAMPLING_STRATEGY, UNDER_SAMPLING_STRATEGY, MIDDLE_SAMPLING_STRATEGY)
 
   override def load(path: String): DataBalancer = super.load(path)
 }
