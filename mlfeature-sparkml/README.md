@@ -44,6 +44,18 @@ val result = balancer.transform(dataFrame)
 result.show(100)
 ```
 
+```scala
+val data: Seq[String] = Seq("a", "a", "a", "a", "b", "b","b", "c")
+val dataFrame = data.toDF("feature")
+
+val balancer = new DataBalancer()
+  .setStrategy("middlesampling")
+  .setInputCol("feature")
+
+val result = balancer.transform(dataFrame)
+result.show(100)
+```
+
 ## Handle missing values
 
 - MissingValueMeanImputer: Impute continuous missing values with mean
