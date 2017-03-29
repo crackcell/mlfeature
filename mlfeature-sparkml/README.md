@@ -6,7 +6,7 @@ Feature engineering toolkit for Spark MLlib:
   - ~~Handle missing values~~: (Implemented in Spark 2.2, [SPARK-13568](https://github.com/apache/spark/pull/11601))
     - ~~Impute continuous missing values with mean: MissingValueMeanImputor~~
 - Feature transform
-  - Enhanced Bucketizer: MyBucketizer
+  - Enhanced Bucketizer: MyBucketizer (Waiting to be merged, [SPARK-19781](https://github.com/apache/spark/pull/17123))
   - ~~Enhanced StringIndexer: MyStringIndexer~~ (Merged with Spark 2.2, [SPARK-17233](https://github.com/apache/spark/pull/17233))
 - Feature selection
   - AuROC for single feature: TODO
