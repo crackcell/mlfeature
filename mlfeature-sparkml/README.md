@@ -15,8 +15,10 @@ Feature engineering toolkit for Spark MLlib:
 ## Handle imbalcned dataset
 
 - DataBalancer: Make an balanced dataset with multiple strategies:
-  - stratified oversampling
-  - stratified undersampling
+  - Re-sampling:
+    - over-sampling
+    - under-sampling
+    - middle-sampling
   
 Example:
 
