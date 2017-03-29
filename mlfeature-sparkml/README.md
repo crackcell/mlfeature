@@ -19,6 +19,7 @@ Feature engineering toolkit for Spark MLlib:
     - over-sampling
     - under-sampling
     - middle-sampling
+  - SMOTE: TODO
   
 Example:
 
