@@ -26,7 +26,7 @@ import org.apache.spark.MySparkTestSuite
   *
   * @author Menglong TAN
   */
-class VarianceThresholdSelectorSuite extends MySparkTestSuite {
+class VarianceSelectorSuite extends MySparkTestSuite {
 
   import sqlContext.implicits._
 
@@ -49,7 +49,7 @@ class VarianceThresholdSelectorSuite extends MySparkTestSuite {
 
     val df = data.zip(expected).toSeq.toDF("features", "expected")
 
-    val selector = new VarianceThresholdSelector()
+    val selector = new VarianceSelector()
       .setInputCol("features")
       .setOutputCol("selected")
       .setVariance(3)

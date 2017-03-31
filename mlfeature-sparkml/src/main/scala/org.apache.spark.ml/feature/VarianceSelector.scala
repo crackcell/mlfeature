@@ -27,13 +27,12 @@ import org.apache.spark.rdd.RDD
 import org.apache.spark.sql._
 import org.apache.spark.sql.types.StructType
 
-
 /**
   * Class description.
   *
   * @author Menglong TAN
   */
-trait VarianceThresholdSelectorParams
+trait VarianceSelectorParams
   extends Params with HasInputCol with HasOutputCol with DefaultParamsWritable {
 
   val threshold: DoubleParam = new DoubleParam(this, "threshold",
@@ -42,8 +41,8 @@ trait VarianceThresholdSelectorParams
   def getVariance: Double = $(threshold)
 }
 
-class VarianceThresholdSelector(override val uid: String)
-  extends Transformer with VarianceThresholdSelectorParams {
+class VarianceSelector(override val uid: String)
+  extends Transformer with VarianceSelectorParams {
 
   def this() = this(Identifiable.randomUID("varThres"))
 
@@ -83,9 +82,9 @@ class VarianceThresholdSelector(override val uid: String)
     SchemaUtils.appendColumn(schema, $(outputCol), dataType)
   }
 
-  override def copy(extra: ParamMap): VarianceThresholdSelector = defaultCopy(extra)
+  override def copy(extra: ParamMap): VarianceSelector = defaultCopy(extra)
 }
 
-object VarianceThresholdSelector extends DefaultParamsReadable[VarianceThresholdSelector] {
-  override def load(path: String): VarianceThresholdSelector = super.load(path)
+object VarianceSelector extends DefaultParamsReadable[VarianceSelector] {
+  override def load(path: String): VarianceSelector = super.load(path)
 }

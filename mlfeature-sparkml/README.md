@@ -9,8 +9,7 @@ Feature engineering toolkit for Spark MLlib:
   - Enhanced Bucketizer: MyBucketizer (Waiting to be merged, [SPARK-19781](https://github.com/apache/spark/pull/17123))
   - ~~Enhanced StringIndexer: MyStringIndexer~~ (Merged with Spark 2.2, [SPARK-17233](https://github.com/apache/spark/pull/17233))
 - Feature selection
-  - Filter
-    - VarianceThresholdSelector: remove fetures with low variance
+  - VarianceSelector: remove fetures with low variance
   - Metrics
     - AuROC for single feature: TODO
     - Correlation: TODO
@@ -105,9 +104,9 @@ val transformed = indexer.transform(df)
 
 # Feature Selection
 
-## VarianceThresholdSelector
+## VarianceSelector
 
-VarianceThresholdSelector is a simple baseline approach to feature selection. It removes all features whose variance doesn’t meet some threshold. By default, it removes all zero-variance features, i.e. features that have the same value in all samples.
+VarianceSelector is a simple baseline approach to feature selection. It removes all features whose variance doesn’t meet some threshold. By default, it removes all zero-variance features, i.e. features that have the same value in all samples.
 
 ```scala
 val data = Array(
@@ -128,7 +127,7 @@ val expected = Array(
 
 val df = data.zip(expected).toSeq.toDF("features", "expected")
 
-val selector = new VarianceThresholdSelector()
+val selector = new VarianceSelector()
   .setInputCol("features")
   .setOutputCol("selected")
   .setVariance(3)
