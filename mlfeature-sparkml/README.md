@@ -9,8 +9,11 @@ Feature engineering toolkit for Spark MLlib:
   - Enhanced Bucketizer: MyBucketizer (Waiting to be merged, [SPARK-19781](https://github.com/apache/spark/pull/17123))
   - ~~Enhanced StringIndexer: MyStringIndexer~~ (Merged with Spark 2.2, [SPARK-17233](https://github.com/apache/spark/pull/17233))
 - Feature selection
-  - AuROC for single feature: TODO
-  - Correlation: TODO
+  - Filter
+    - VarianceThresholdSelector: remove fetures with low variance
+  - Metrics
+    - AuROC for single feature: TODO
+    - Correlation: TODO
 
 ## Handle imbalcned dataset
 
@@ -98,4 +101,42 @@ val indexer = new MyStringIndexer()
   .fit(df)
 
 val transformed = indexer.transform(df)
+```
+
+# Feature Selection
+
+## VarianceThresholdSelector
+
+VarianceThresholdSelector is a simple baseline approach to feature selection. It removes all features whose variance doesn’t meet some threshold. By default, it removes all zero-variance features, i.e. features that have the same value in all samples.
+
+```scala
+val data = Array(
+  Vectors.dense(0, 1.0, 0),
+  Vectors.dense(0, 3.0, 0),
+  Vectors.dense(0, 4.0, 0),
+  Vectors.dense(0, 5.0, 0),
+  Vectors.dense(1, 6.0, 0)
+)
+
+val expected = Array(
+  Vectors.dense(1.0),
+  Vectors.dense(3.0),
+  Vectors.dense(4.0),
+  Vectors.dense(5.0),
+  Vectors.dense(6.0)
+)
+
+val df = data.zip(expected).toSeq.toDF("features", "expected")
+
+val selector = new VarianceThresholdSelector()
+  .setInputCol("features")
+  .setOutputCol("selected")
+  .setVariance(3)
+
+val result = selector.transform(df)
+
+result.select("expected", "selected").collect()
+  .foreach { case Row(vector1: Vector, vector2: Vector) =>
+    assert(vector1.equals(vector2), "Transformed vector is different with expected.")
+  }
 ```
