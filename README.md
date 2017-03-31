@@ -7,7 +7,8 @@ Feature engineering toolkit for Spark MLlib:
     - ~~Impute continuous missing values with mean: MissingValueMeanImputor~~
 - Feature selection:
   - VarianceSelector: remove fetures with low variance
-  - ByModelSelector: select feature with model
+  - UnivariateSelector: feature selection with univariate metrics
+  - ByModelSelector: feature selection with a model
 - Feature transformers:
   - Enhanced Bucketizer: MyBucketizer (Waiting to be merged, [SPARK-19781](https://github.com/apache/spark/pull/17123))
   - ~~Enhanced StringIndexer: MyStringIndexer~~ (Merged with Spark 2.2, [SPARK-17233](https://github.com/apache/spark/pull/17233))
@@ -101,6 +102,14 @@ result.select("expected", "selected").collect()
   }
 ```
 
+## UnivariateSelector
+
+TODO
+
+## ByModelSelector
+
+TODO
+
 ## Feature transform
 
 ### MyBucketizer: Enhanced Bucketizer
@@ -137,6 +146,3 @@ val indexer = new MyStringIndexer()
 
 val transformed = indexer.transform(df)
 ```
-
-## ByModelSelector
-
