@@ -27,20 +27,21 @@ import org.apache.spark.rdd.RDD
 import org.apache.spark.sql._
 import org.apache.spark.sql.types.StructType
 
-/**
-  * Class description.
-  *
-  * @author Menglong TAN
-  */
-trait VarianceSelectorParams
+/** Private trait for params for VarianceSelector */
+private[ml] trait VarianceSelectorParams
   extends Params with HasInputCol with HasOutputCol with DefaultParamsWritable {
 
   val threshold: DoubleParam = new DoubleParam(this, "threshold",
     "lower bound of the feature variance")
 
-  def getVariance: Double = $(threshold)
+  def getThreshold: Double = $(threshold)
 }
 
+/**
+  * Class for removing features with low variance in columns of [[Vector]].
+  *
+  * @author Menglong TAN
+  */
 class VarianceSelector(override val uid: String)
   extends Transformer with VarianceSelectorParams {
 
@@ -54,12 +55,17 @@ class VarianceSelector(override val uid: String)
 
   def setThreshold(value: Double): this.type = set(threshold, value)
 
+  private var variance = Array(0.0)
+
+  def getVariance: Array[Double] = variance
+
   override def transform(dataset: Dataset[_]): DataFrame = {
     transformSchema(dataset.schema, logging = true)
     val input: RDD[OldVector] = dataset.select($(inputCol)).rdd.map {
       case Row(v: Vector) => OldVectors.fromML(v)
     }
-    val selectedIndics = Statistics.colStats(input).variance.toArray
+    variance = Statistics.colStats(input).variance.toArray
+    val selectedIndics = variance
       .zipWithIndex
       .filter(_._1 >= $(threshold))
       .map(_._2)
