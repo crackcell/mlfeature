@@ -52,7 +52,7 @@ class VarianceSelector(override val uid: String)
 
   def setOutputCol(value: String): this.type = set(outputCol, value)
 
-  def setVariance(value: Double): this.type = set(threshold, value)
+  def setThreshold(value: Double): this.type = set(threshold, value)
 
   override def transform(dataset: Dataset[_]): DataFrame = {
     transformSchema(dataset.schema, logging = true)

@@ -130,7 +130,7 @@ val df = data.zip(expected).toSeq.toDF("features", "expected")
 val selector = new VarianceSelector()
   .setInputCol("features")
   .setOutputCol("selected")
-  .setVariance(3)
+  .setThreshold(3)
 
 val result = selector.transform(df)
 
